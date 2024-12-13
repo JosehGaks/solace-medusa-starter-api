@@ -13,4 +13,4 @@ RUN corepack prepare yarn@3.2.3 --activate
 RUN yarn
 RUN yarn build
 
-CMD ["yarn", "db:migrate", "&&", "yarn", "start"]
+CMD ["sh", "-c", "yarn db:migrate && yarn start"]
