@@ -4,25 +4,36 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd());
 
 const dynamicModules = {};
 
-const stripeApiKey = process.env.STRIPE_API_KEY;
-const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+// const stripeApiKey = process.env.STRIPE_API_KEY;
+// const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-const isStripeConfigured = Boolean(stripeApiKey) && Boolean(stripeWebhookSecret);
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
+const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY
 
-if (isStripeConfigured) {
-  console.log('Stripe API key and webhook secret found. Enabling payment module');
+const isPaystackConfigured = Boolean(PAYSTACK_SECRET_KEY) && Boolean(PAYSTACK_PUBLIC_KEY);
+
+if (isPaystackConfigured) {
+  console.log('Paystack configured, Enabling payment module');
   dynamicModules[Modules.PAYMENT] = {
     resolve: '@medusajs/medusa/payment',
     options: {
       providers: [
+        // {
+        //   resolve: '@medusajs/medusa/payment-stripe',
+        //   id: 'stripe',
+        //   options: {
+        //     apiKey: stripeApiKey,
+        //     webhookSecret: stripeWebhookSecret
+        //   }
+        // },
         {
-          resolve: '@medusajs/medusa/payment-stripe',
-          id: 'stripe',
+          resolve: "medusa-payment-paystack",
+          id: "paystack",
           options: {
-            apiKey: stripeApiKey,
-            webhookSecret: stripeWebhookSecret
-          }
-        }
+            secret_key: PAYSTACK_SECRET_KEY,
+            public_key: PAYSTACK_PUBLIC_KEY,
+          } satisfies import("medusa-payment-paystack").PluginOptions,
+        },
       ]
     }
   };
